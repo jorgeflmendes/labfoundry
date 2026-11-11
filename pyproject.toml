@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labfoundry"
+version = "0.2.0"
+description = "Deterministic procedural cyber-range scenario compiler and GNS3 runtime"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "LabFoundry contributors"}]
+keywords = ["cyber-range", "gns3", "network-emulation", "pcap", "virtualbox"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Education",
+  "Intended Audience :: System Administrators",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Typing :: Typed",
+  "Topic :: Security",
+  "Topic :: System :: Networking",
+]
+dependencies = [
+  "httpx>=0.27,<1",
+  "packaging>=24,<26",
+  "pydantic>=2.9,<3",
+  "PyYAML>=6,<7",
+  "rich>=13,<16",
+  "typer>=0.12,<1",
+  "websockets>=13,<17",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2,<2",
+  "mypy>=1.11,<2",
+  "pytest>=8,<10",
+  "pytest-asyncio>=0.24,<2",
+  "pytest-cov>=7,<8",
+  "respx>=0.21,<1",
+  "ruff>=0.7,<1",
+  "types-PyYAML>=6,<7",
+  "mkdocs>=1.6.1,<2",
+  "mkdocs-material>=9.7.7,<10",
+  "mkdocstrings>=1.0.6,<2",
+  "mkdocstrings-python>=2.0.5,<3",
+]
+docs = [
+  "mkdocs>=1.6.1,<2",
+  "mkdocs-material>=9.7.7,<10",
+  "mkdocstrings>=1.0.6,<2",
+  "mkdocstrings-python>=2.0.5,<3",
+]
+
+[project.scripts]
+labfoundry = "labfoundry.cli.main:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+labfoundry = ["py.typed", "compiler/gns3_symbols/*.svg"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+asyncio_mode = "auto"
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+  "integration: opt-in tests requiring GNS3 or real guest transports",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+plugins = ["pydantic.mypy"]
+
+[tool.coverage.run]
+branch = true
+source = ["labfoundry"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_covered = false

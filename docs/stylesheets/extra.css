@@ -1,0 +1,9 @@
+:root {
+  --md-text-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --md-code-font: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border-radius: 0.35rem;
+}

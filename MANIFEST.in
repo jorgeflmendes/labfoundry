@@ -1,0 +1,4 @@
+include CONTRIBUTING.md SECURITY.md Makefile mkdocs.yml
+recursive-include docs *.md *.css *.png
+recursive-include tests *.py
+recursive-include .github/workflows *.yml

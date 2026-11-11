@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -U pip
+      - run: python -m pip install -e '.[dev]'
+      - run: python -m pytest --cov=labfoundry --cov-branch --cov-report=term-missing --cov-fail-under=70
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m mypy src
+      - run: python -m build
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -U pip
+      - run: python -m pip install -e '.[docs]'
+      - run: python -m mkdocs build --strict
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python -m pip install -U pip build twine check-wheel-contents pip-audit
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - run: check-wheel-contents dist/*.whl
+      - run: pip-audit .
+      - name: Test source distribution
+        shell: bash
+        run: |
+          source_dir="$RUNNER_TEMP/labfoundry-sdist"
+          mkdir "$source_dir"
+          tar -xzf dist/*.tar.gz -C "$source_dir" --strip-components=1
+          python -m pip install -e "$source_dir[dev]"
+          cd "$source_dir"
+          python -m pytest
